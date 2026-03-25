@@ -4,7 +4,7 @@ import type { z } from 'zod/v4';
 import { User } from '#models';
 import type { userSchema } from '#schemas';
 
-type UserInputDTO = z.input<typeof userSchema>;
+type UserInputDTO = z.infer<typeof userSchema>;
 type UserDTO = UserInputDTO & {
   _id: InstanceType<typeof Types.ObjectId>;
   createdAt: Date;
@@ -53,7 +53,7 @@ export const updateUser: RequestHandler<IdParams, UserDTO, UserInputDTO> = async
 
   if (!isValidObjectId(id)) throw new Error('Invalid id', { cause: { status: 400 } });
 
-  const user = await User.findByIdAndUpdate(id, body, { new: true }).lean();
+  const user = await User.findByIdAndUpdate(id, body, { returnDocument: 'after' }).lean();
 
   if (!user) throw new Error('User not found', { cause: { status: 404 } });
 

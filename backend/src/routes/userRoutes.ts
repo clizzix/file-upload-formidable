@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { createUser, deleteUser, getUserById, getUsers, updateUser } from '#controllers';
-import { validateBody } from '#middleware';
+import { validateBody, fileUploadHandler } from '#middleware';
 import { userSchema } from '#schemas';
 
 const userRoutes = Router();
@@ -9,7 +9,7 @@ userRoutes.route('/').get(getUsers).post(validateBody(userSchema), createUser);
 userRoutes
   .route('/:id')
   .get(getUserById)
-  .put(validateBody(userSchema), updateUser)
+  .put(fileUploadHandler, validateBody(userSchema), updateUser)
   .delete(deleteUser);
 
 export default userRoutes;

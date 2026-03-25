@@ -6,7 +6,12 @@ import Preview from './Preview.tsx';
 const EditForm = () => {
   const [imagePreview, setImagePreview] = useState('');
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    firstName: string;
+    lastName: string;
+    email: string;
+    image: string | File;
+  }>({
     firstName: '',
     lastName: '',
     email: '',
@@ -17,7 +22,7 @@ const EditForm = () => {
     let ignore = false;
     (async () => {
       try {
-        const userData = await getUserById('686676f800df04974a77c9df');
+        const userData = await getUserById('69c42cf73cc5ac366465f827');
         if (!ignore) {
           const { firstName, lastName, email, image } = userData;
           setForm({ firstName, lastName, email, image });
@@ -38,10 +43,13 @@ const EditForm = () => {
   }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.name === 'image') {
-      setImagePreview(e.target.value);
+    if (e.target.type === 'file') {
+      const file = e.target.files![0];
+      setImagePreview(URL.createObjectURL(file));
+      setForm(prev => ({ ...prev, image: file }));
+    } else {
+      setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
     }
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -50,8 +58,8 @@ const EditForm = () => {
       setLoading(true);
 
       const { firstName, lastName, email, image } = await updateUser({
-        id: '686676f800df04974a77c9df',
-        formData: form
+        id: '69c42cf73cc5ac366465f827',
+        formData: new FormData(e.target as HTMLFormElement)
       });
 
       setImagePreview(image);
@@ -109,10 +117,10 @@ const EditForm = () => {
         <label className="input input-bordered flex items-center gap-2 w-full">
           Image:
           <input
-            value={form.image}
             onChange={handleChange}
-            type="text"
+            type="file"
             name="image"
+            accept="image/*"
             className="grow"
           />
         </label>

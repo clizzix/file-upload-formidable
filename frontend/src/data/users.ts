@@ -13,18 +13,10 @@ const getUserById = async (id: string) => {
   return data;
 };
 
-type FormInput = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  image: string;
-};
-
-const updateUser = async ({ id, formData }: { id: string; formData: FormInput }) => {
+const updateUser = async ({ id, formData }: { id: string; formData: FormData }) => {
   const res = await fetch(`${baseURL}/${id}`, {
     method: 'PUT',
-    headers: { 'Content-type': 'application/json' },
-    body: JSON.stringify(formData)
+    body: formData
   });
   if (!res.ok) throw new Error(`${res.status}. Something went wrong!`);
   const data = await res.json();
